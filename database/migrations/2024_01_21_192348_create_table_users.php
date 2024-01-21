@@ -29,6 +29,10 @@ class CreateTableUsers extends Migration
             
             $table->timestamps();
         });
+
+        Schema::table('users', function (Blueprint $table) {
+            $table->longText('password');
+        });
     }
 
     /**
