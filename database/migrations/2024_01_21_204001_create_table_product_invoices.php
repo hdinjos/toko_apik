@@ -17,13 +17,13 @@ class CreateTableProductInvoices extends Migration
             $table->id();
 
             $table->unsignedBigInteger("product_id");
-            $table->foreign("product_id")->references("id")->on("products");
+            $table->foreign("product_id")->references("id")->on("products")->onDelete("cascade");
 
             $table->bigInteger("total_price");
             $table->integer("total_qty");
 
             $table->unsignedBigInteger("invoice_id");
-            $table->foreign("invoice_id")->references("id")->on("invoices");
+            $table->foreign("invoice_id")->references("id")->on("invoices")->onDelete("cascade");
             
             $table->timestamps();
         });
