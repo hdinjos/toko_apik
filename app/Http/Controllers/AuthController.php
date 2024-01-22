@@ -33,13 +33,18 @@ class AuthController extends Controller
         return $this->createNewToken($token);
     }
 
+    
+
     protected function createNewToken($token)
     {
         return response()->json([
             "access_token" => $token,
             "token_type" => 'bearer',
-            'expires_in' => auth()->guard('api')->factory()->getTTL() *60,
-            'user' => auth()->user()
+            'expires_in' => auth()->factory()->getTTL() *60,
+            'user' => [
+                "email"=> auth()->user()->email,
+                "role_id" => auth()->user()->role_id
+            ]
         ]);
     }
 }
