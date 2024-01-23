@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Product extends Model
 {
@@ -28,5 +29,10 @@ class Product extends Model
         'qty' => 'integer',
         'category_id' => 'integer',
     ];
+
+    protected function image(): Attribute
+    {
+        return Attribute::get(fn($image) => asset("/storage/products/" . $image));
+    }
     
 }
