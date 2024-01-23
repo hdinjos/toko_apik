@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProductController;
 use App\Http\Middleware\VerifyJwt;
 
 /*
@@ -37,4 +38,10 @@ Route::group([
 	Route::post('/logout', [AuthController::class, 'logout']);
 	Route::post('/refresh', [AuthController::class, 'refreshToken']);
 	Route::get('/user-profile', [AuthController::class, 'userProfile']);
+});
+
+Route::group([
+	'middleware' => ['jwt.verify:1'],
+], function ($router) {
+	Route::get('/products', [ProductController::class, 'index']);
 });
