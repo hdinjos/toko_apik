@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Middleware\VerifyJwt;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,25 +20,21 @@ use App\Http\Controllers\AuthController;
 //     return $request->user();
 // });
 
-// Route::group(
-//     [
-//         'middleware' => 'api',
-//         'prefix' => 'auth'
-//     ],
-//     function ($touter) {
-//         Route::post('/login', [AuthController::class, 'login']);
-//     }
-// );
-
-// Route::post('/login', [AuthController::class, 'login']);
 
 Route::group([
-	'middleware' => 'api',
+
 	'prefix' => 'auth'
 ], function ($router) {
 	Route::post('/login', [AuthController::class, 'login']);
 	Route::post('/register', [AuthController::class, 'register']);
+});
+
+//1 adm, 2 customer
+Route::group([
+	'middleware' => ['jwt.verify:1,2'],
+	'prefix' => 'auth'
+], function ($router) {
 	// Route::post('/logout', [AuthController::class, 'logout']);
 	// Route::post('/refresh', [AuthController::class, 'refresh']);
-	// Route::get('/user-profile', [AuthController::class, 'userProfile']);    
+	Route::get('/user-profile', [AuthController::class, 'userProfile']);
 });

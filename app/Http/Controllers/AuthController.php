@@ -11,11 +11,6 @@ use App\Models\User;
 class AuthController extends Controller
 {
 
-    public function __construct()
-    {
-        $this->middleware("auth:api", ["except" => ['login', 'register']]);
-    }
-
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -28,7 +23,13 @@ class AuthController extends Controller
         }
 
         if (!$token = auth()->attempt($validator->validate())) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json(
+                [
+                    'error' => true,
+                    "message" => "invalid credential"
+                ],
+                400
+            );
         }
 
         return $this->createNewToken($token);
@@ -54,6 +55,10 @@ class AuthController extends Controller
                 "user"=> $user
             ]
         );
+    }
+
+    public function userProfile(Request $request) {
+        return response()->json(auth()->user());
     }
 
     protected function createNewToken($token)
