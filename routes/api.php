@@ -34,7 +34,7 @@ Route::group([
 	'middleware' => ['jwt.verify:1,2'],
 	'prefix' => 'auth'
 ], function ($router) {
-	// Route::post('/logout', [AuthController::class, 'logout']);
-	// Route::post('/refresh', [AuthController::class, 'refresh']);
+	Route::post('/logout', [AuthController::class, 'logout']);
+	Route::post('/refresh', [AuthController::class, 'refreshToken']);
 	Route::get('/user-profile', [AuthController::class, 'userProfile']);
 });
