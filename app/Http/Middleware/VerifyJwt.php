@@ -26,18 +26,17 @@ class VerifyJwt extends BaseMiddleware
             } else {
                 return response()->json([
                     "success" => false,
-                    "message"=> "You are unauthorized to access this resource",
-                ]);
+                    "message" => "You are unauthorized to access this resource",
+                ], 401);
             }
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             if ($e instanceof \PhpOpenSourceSaver\JWTAuth\Exceptions\TokenInvalidException) {
                 return response()->json(['message' => 'token is invalid'], 400);
-            } else if ($e instanceof \PhpOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException){
+            } else if ($e instanceof \PhpOpenSourceSaver\JWTAuth\Exceptions\TokenExpiredException) {
                 return response()->json(['message' => 'token is expired'], 400);
             } else {
                 return response()->json(['message' => 'Authorization Token not found'], 400);
             }
         }
-        return $next($request);
     }
 }
