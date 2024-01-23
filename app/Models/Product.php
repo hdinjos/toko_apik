@@ -22,4 +22,11 @@ class Product extends Model
         "description",
         'category_id',
     ];
+
+    protected $casts = [
+        'price' => 'integer',
+        'qty' => 'integer',
+        'category_id' => 'integer',
+    ];
+    
 }
