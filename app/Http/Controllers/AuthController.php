@@ -35,7 +35,8 @@ class AuthController extends Controller
         return $this->createNewToken($token);
     }
 
-    public function register(Request $request){
+    public function register(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|between:2,100',
             "email" => "required|email|string|email|max:50|unique:users",
@@ -47,28 +48,29 @@ class AuthController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        $user = User::create(array_merge($validator->validate(), ["password"=>Hash::make($request->get("password"))]));
+        $user = User::create(array_merge($validator->validate(), ["password" => Hash::make($request->get("password"))]));
         return response()->json(
             [
-                "success"=> true,
+                "success" => true,
                 "message" => "user register succesfull",
-                "user"=> $user
+                "user" => $user
             ]
         );
     }
 
-    public function userProfile(Request $request) {
+    public function userProfile(Request $request)
+    {
         return response()->json(auth()->user());
     }
 
-    public function logout(Request $request) {
+    public function logout(Request $request)
+    {
         auth()->logout();
         return response()->json(["message" => "Logout success"]);
     }
 
-    public function refreshToken (Request $request) {
-        // $hello = auth()->refresh();
-        // var_dump($hello);
+    public function refreshToken(Request $request)
+    {
         return $this->createNewToken(auth()->refresh());
     }
     protected function createNewToken($token)
@@ -76,9 +78,9 @@ class AuthController extends Controller
         return response()->json([
             "access_token" => $token,
             "token_type" => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() *60,
+            'expires_in' => auth()->factory()->getTTL() * 60,
             'user' => [
-                "email"=> auth()->user()->email,
+                "email" => auth()->user()->email,
                 "role_id" => auth()->user()->role_id
             ]
         ]);
