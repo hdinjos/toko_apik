@@ -25,10 +25,17 @@ class ProductResource extends JsonResource
      */
     public function toArray($request)
     {
-        return [
-            "status" => $this->status,
-            "message" => $this->message,
-            "data" => $this->resource,
-        ];
+        if ($this->resource){
+            return [
+                "status" => $this->status,
+                "message" => $this->message,
+                "data" => $this->resource,
+            ];
+        } else {
+            return [
+                "status" => $this->status,
+                "message" => $this->message,
+            ];
+        }
     }
 }

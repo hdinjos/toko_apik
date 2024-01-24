@@ -136,8 +136,20 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($productId)
     {
-        //
+        if (!empty($productId)){
+            $product = Product::find((int)$productId);
+            var_dump($product->image);
+            // $product->delete();
+            return ProductResource(true, "data delete successfull");
+        } else {
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "product not found"
+                ], 404
+            );
+        }
     }
 }
