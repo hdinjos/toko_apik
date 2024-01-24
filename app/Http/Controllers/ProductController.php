@@ -140,9 +140,27 @@ class ProductController extends Controller
     {
         if (!empty($productId)){
             $product = Product::find((int)$productId);
-            var_dump($product->image);
-            // $product->delete();
-            return ProductResource(true, "data delete successfull");
+            if ($product){
+                $product->delete();
+            } else {
+                return response()->json(
+                    [
+                        "success" => false,
+                        "message" => "product not found"
+                    ], 404
+                );
+            }
+            if(Storage::exists($product->image_location)){
+                Storage::delete($product->image_location);
+            }else {
+                return response()->json(
+                    [
+                        "success" => false,
+                        "message" => "image not found"
+                    ], 404
+                );
+            }
+            return new ProductResource(true, "data delete successfull", "");
         } else {
             return response()->json(
                 [

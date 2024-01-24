@@ -30,9 +30,19 @@ class Product extends Model
         'category_id' => 'integer',
     ];
 
-    protected function image(): Attribute
+    protected $appends = [
+        "image_url",
+        "image_location"
+    ];
+
+    protected function imageUrl(): Attribute
     {
-        return Attribute::get(fn($image) => asset("/storage/products/" . $image));
+        return Attribute::get(fn() => asset("/storage/products/" . $this->image));
+    }
+
+    protected function imageLocation(): Attribute
+    {
+        return Attribute::get(fn() => "public/products/" . $this->image);
     }
     
 }

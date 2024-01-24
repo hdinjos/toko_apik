@@ -46,4 +46,5 @@ Route::group([
 	Route::get('/products', [ProductController::class, 'index']);
 	Route::post('/products', [ProductController::class, 'store']);
 	Route::get('/products/{productId}', [ProductController::class, 'show']);
+	Route::delete('/products/{productId}', [ProductController::class, 'destroy']);
 });
