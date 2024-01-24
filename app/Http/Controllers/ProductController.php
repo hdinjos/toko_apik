@@ -78,9 +78,33 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($productId)
     {
-        //
+        if (!empty($productId)){
+            $product = Product::find((int)$productId);
+            if ($product){
+                return response()->json(
+                    [
+                        "success" => true,
+                        "data" => $product
+                    ]
+                );
+            } else {
+                return response()->json(
+                    [
+                        "success" => false,
+                        "message" => "product not found"
+                    ], 404
+                );
+            }
+        } else {
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "product not found"
+                ], 404
+            );
+        }
     }
 
     /**
