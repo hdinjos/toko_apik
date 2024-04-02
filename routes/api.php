@@ -51,4 +51,7 @@ Route::group([
     Route::delete('/products/{productId}', [ProductController::class, 'destroy']);
 
     Route::get('/product-category', [ProductCategoriesController::class, 'index']);
+    Route::post('/product-category', [ProductCategoriesController::class, 'store']);
+    Route::get('/product-category/{productCategoryId}', [ProductCategoriesController::class, 'show']);
+    Route::delete('/product-category/{productCategoryId}', [ProductCategoriesController::class, 'destroy']);
 });
