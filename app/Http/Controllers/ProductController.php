@@ -46,19 +46,20 @@ class ProductController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|between:2,100',
-            'image' =>'required|image|mimes:png,jpg,jpeg,svg|max:2048',
+            'image' => 'required|image|mimes:png,jpg,jpeg,svg|max:2048',
             'price' => 'required|integer',
             'qty' => 'required|integer',
             "description" => 'required|string',
             'category_id' => 'required|integer',
         ]);
-        
-        if ($validator->fails()){
+
+        if ($validator->fails()) {
             return response()->json(
                 [
                     "success" => false,
                     "message" => $validator->errors()
-                ], 422
+                ],
+                422
             );
         }
 
@@ -80,9 +81,9 @@ class ProductController extends Controller
      */
     public function show($productId)
     {
-        if (!empty($productId)){
+        if (!empty($productId)) {
             $product = Product::find((int)$productId);
-            if ($product){
+            if ($product) {
                 return response()->json(
                     [
                         "success" => true,
@@ -94,7 +95,8 @@ class ProductController extends Controller
                     [
                         "success" => false,
                         "message" => "product not found"
-                    ], 404
+                    ],
+                    404
                 );
             }
         } else {
@@ -102,7 +104,8 @@ class ProductController extends Controller
                 [
                     "success" => false,
                     "message" => "product not found"
-                ], 404
+                ],
+                404
             );
         }
     }
@@ -125,9 +128,54 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $productId)
     {
-        //
+
+        if (empty($productId)) {
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => "product not found"
+                ],
+                404
+            );
+        }
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|between:2,100',
+            'image' => 'image|mimes:png,jpg,jpeg,svg|max:2048',
+            'price' => 'required|integer',
+            'qty' => 'required|integer',
+            "description" => 'required|string',
+            'category_id' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => $validator->errors()
+                ],
+                422
+            );
+        }
+        if ($request->hasFile("image")) {
+            //create new generate image name with extention
+            //find name image in table image by id products
+
+            //if image name not found:
+            //save image file in public storage with generate name
+            //if image found:
+            //remove image file in public storage with image name founded
+            //save image file in public storage with generate name
+
+            //save update field, specially image filed, fill with generate image name
+        } else {
+            //save update field
+        }
+
+
+        return response()->json((["test" => "Oke"]));
     }
 
     /**
@@ -138,26 +186,28 @@ class ProductController extends Controller
      */
     public function destroy($productId)
     {
-        if (!empty($productId)){
+        if (!empty($productId)) {
             $product = Product::find((int)$productId);
-            if ($product){
+            if ($product) {
                 $product->delete();
             } else {
                 return response()->json(
                     [
                         "success" => false,
                         "message" => "product not found"
-                    ], 404
+                    ],
+                    404
                 );
             }
-            if(Storage::exists($product->image_location)){
+            if (Storage::exists($product->image_location)) {
                 Storage::delete($product->image_location);
-            }else {
+            } else {
                 return response()->json(
                     [
                         "success" => false,
                         "message" => "image not found"
-                    ], 404
+                    ],
+                    404
                 );
             }
             return new ProductResource(true, "data delete successfull", "");
@@ -166,7 +216,8 @@ class ProductController extends Controller
                 [
                     "success" => false,
                     "message" => "product not found"
-                ], 404
+                ],
+                404
             );
         }
     }

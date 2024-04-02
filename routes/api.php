@@ -24,27 +24,28 @@ use App\Http\Middleware\VerifyJwt;
 
 Route::group([
 
-	'prefix' => 'auth'
+    'prefix' => 'auth'
 ], function ($router) {
-	Route::post('/login', [AuthController::class, 'login']);
-	Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/register', [AuthController::class, 'register']);
 });
 
 //1 adm, 2 customer
 Route::group([
-	'middleware' => ['jwt.verify:1,2'],
-	'prefix' => 'auth'
+    'middleware' => ['jwt.verify:1,2'],
+    'prefix' => 'auth'
 ], function ($router) {
-	Route::post('/logout', [AuthController::class, 'logout']);
-	Route::post('/refresh', [AuthController::class, 'refreshToken']);
-	Route::get('/user-profile', [AuthController::class, 'userProfile']);
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/refresh', [AuthController::class, 'refreshToken']);
+    Route::get('/user-profile', [AuthController::class, 'userProfile']);
 });
 
 Route::group([
-	'middleware' => ['jwt.verify:1'],
+    'middleware' => ['jwt.verify:1'],
 ], function ($router) {
-	Route::get('/products', [ProductController::class, 'index']);
-	Route::post('/products', [ProductController::class, 'store']);
-	Route::get('/products/{productId}', [ProductController::class, 'show']);
-	Route::delete('/products/{productId}', [ProductController::class, 'destroy']);
+    Route::get('/products', [ProductController::class, 'index']);
+    Route::get('/products/{productId}', [ProductController::class, 'show']);
+    Route::post('/products', [ProductController::class, 'store']);
+    Route::post('/products/{productId}', [ProductController::class, 'update']);
+    Route::delete('/products/{productId}', [ProductController::class, 'destroy']);
 });
