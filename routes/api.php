@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductCategoriesController;
 use App\Http\Middleware\VerifyJwt;
 
 /*
@@ -48,4 +49,6 @@ Route::group([
     Route::post('/products', [ProductController::class, 'store']);
     Route::post('/products/{productId}', [ProductController::class, 'update']);
     Route::delete('/products/{productId}', [ProductController::class, 'destroy']);
+
+    Route::get('/product-category', [ProductCategoriesController::class, 'index']);
 });
