@@ -42,6 +42,8 @@ class ProductCategoriesController extends Controller
    */
   public function store(Request $request)
   {
+    var_dump($request->all());
+
     $validator = Validator::make($request->all(), [
       "name" => "required|string|between:2,50"
     ]);
@@ -110,9 +112,40 @@ class ProductCategoriesController extends Controller
    * @param  \App\Models\ProductCategories  $productCategories
    * @return \Illuminate\Http\Response
    */
-  public function update(Request $request, ProductCategories $productCategories)
+  public function update(Request $request, $productCategoryId)
   {
     //
+    if (empty($productCategoryId)) {
+      return response()->json([
+        "success" => false,
+        "message" => "product category not found"
+      ], 404);
+    }
+
+    $validator = Validator::make($request->all(), [
+      "name" => "required|string|between:2,50"
+    ]);
+
+    if ($validator->fails()) {
+      return response()->json([
+        "success" => false,
+        "message" => $validator->errors()
+      ], 422);
+    }
+
+    $productCat = ProductCategories::find((int)$productCategoryId);
+    if ($productCat == NULL) {
+      return response()->json([
+        "success" => false,
+        "message" => "product category not found"
+      ], 404);
+    } else {
+      $productCat->update($validator->validate());
+      return response()->json([
+        "success" => false,
+        "message" => "product category update success"
+      ], 200);
+    }
   }
 
   /**
