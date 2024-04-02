@@ -6,15 +6,15 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductResource extends JsonResource
 {
-    public $status;
+    public $success;
     public $message;
     public $resource;
 
-    public function __construct($status, $message, $resource)
+    public function __construct($success, $message, $resource)
     {
         parent::__construct($resource);
-        $this-> status = $status;
-        $this-> message = $message;
+        $this->success = $success;
+        $this->message = $message;
     }
 
     /**
@@ -25,15 +25,15 @@ class ProductResource extends JsonResource
      */
     public function toArray($request)
     {
-        if ($this->resource){
+        if ($this->resource) {
             return [
-                "status" => $this->status,
+                "success" => $this->success,
                 "message" => $this->message,
                 "data" => $this->resource,
             ];
         } else {
             return [
-                "status" => $this->status,
+                "success" => $this->success,
                 "message" => $this->message,
             ];
         }

@@ -141,6 +141,14 @@ class ProductController extends Controller
             );
         }
 
+        $product = Product::find((int)$productId);
+        if ($product == NULL) {
+            return response()->json([
+                "success" => false,
+                "message" => "product not found"
+            ]);
+        }
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|between:2,100',
             'image' => 'image|mimes:png,jpg,jpeg,svg|max:2048',
@@ -160,22 +168,22 @@ class ProductController extends Controller
             );
         }
         if ($request->hasFile("image")) {
-            //create new generate image name with extention
-            //find name image in table image by id products
+            $img = $request->file("image");
+            $imgName = $img->hashName();
 
-            //if image name not found:
-            //save image file in public storage with generate name
-            //if image found:
-            //remove image file in public storage with image name founded
-            //save image file in public storage with generate name
+            if (Storage::exists($product->image_location)) {
+                Storage::delete($product->image_location);
+                $img->storeAs("public/products", $imgName);
+            } else {
+                $img->storeAs("public/products", $imgName);
+            }
+            $product->update(array_merge($validator->validate(), ["image" => $imgName]));
 
-            //save update field, specially image filed, fill with generate image name
+            return new ProductResource(true, "data updated successfull", "");
         } else {
-            //save update field
+            $product->update(array_diff($validator->validate(), ["image"]));
+            return new ProductResource(true, "data updated successfull", "");
         }
-
-
-        return response()->json((["test" => "Oke"]));
     }
 
     /**
