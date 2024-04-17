@@ -3,6 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Product;
+use App\Models\Cart;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class CartController extends Controller
 {
@@ -13,23 +18,38 @@ class CartController extends Controller
      */
     public function index()
     {
-        //
+
+        $userId = auth()->user()->id;
+
+        $carts = Cart::join("products", "carts.product_id", "=", "products.id")
+            ->where("user_id", "=", $userId)
+            ->get();
+
+        $cs = array();
+        foreach ($carts as $c) {
+            array_push($cs, [
+                "img_url" => asset("/storage/products/" . $c->image)
+            ]);
+        }
         return response()->json([
-            "success" => true,
-            "data" => [
-                "orders" => [
-                    [
-                        "productId" => 1,
-                        "productName" => "laptop",
-                        "productImage" => "",
-                        "qty" => 3,
-                        "price" => 2000
-                    ]
-                ],
-                "totalItems" => 3,
-                "totalAmount" => 20000
-            ]
+            "data" => $cs
         ]);
+        // return response()->json([
+        //     "success" => true,
+        //     "data" => [
+        //         "orders" => [
+        //             [
+        //                 "productId" => 1,
+        //                 "productName" => "laptop",
+        //                 "productImage" => "",
+        //                 "qty" => 3,
+        //                 "price" => 2000
+        //             ]
+        //         ],
+        //         "totalItems" => 3,
+        //         "totalAmount" => 20000
+        //     ]
+        // ]);
     }
 
     /**
@@ -40,6 +60,7 @@ class CartController extends Controller
     public function create()
     {
         //
+
     }
 
     /**
@@ -51,6 +72,15 @@ class CartController extends Controller
     public function store(Request $request)
     {
         //
+        $userId = auth()->user()->id;
+        Cart::create([
+            "product_id" => 6,
+            "user_id" => $userId,
+            "total_qty" => 1
+        ]);
+        return response()->json([
+            "success" => true,
+        ]);
     }
 
     /**
