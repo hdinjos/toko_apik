@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductCategoriesController;
+use App\Http\Controllers\CartController;
 use App\Http\Middleware\VerifyJwt;
 
 /*
@@ -55,4 +56,8 @@ Route::group([
     Route::get('/product-category/{productCategoryId}', [ProductCategoriesController::class, 'show']);
     Route::post('/product-category/{productCategoryId}', [ProductCategoriesController::class, 'update']);
     Route::delete('/product-category/{productCategoryId}', [ProductCategoriesController::class, 'destroy']);
+});
+
+Route::group(['middleware' => ['jwt.verify:2']], function ($router) {
+    Route::get('/cart', [CartController::class, "index"]);
 });
