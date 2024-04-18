@@ -23,33 +23,51 @@ class CartController extends Controller
 
         $carts = Cart::join("products", "carts.product_id", "=", "products.id")
             ->where("user_id", "=", $userId)
-            ->get();
+            ->get()
+            ->toArray();
 
-        $cs = array();
-        foreach ($carts as $c) {
-            array_push($cs, [
-                "img_url" => asset("/storage/products/" . $c->image)
+        if ($userId == NULL || $carts == NULL) {
+            return response()->json([
+                "success" => true,
+                "data" => [
+                    "orders" => [],
+                    "totalItems" => 0,
+                    "totalOrder" => 0,
+                    "totalAmount" => 0
+                ]
             ]);
         }
+
+        $tQty = 0;
+        $tPrice = 0;
+        foreach ($carts as $c) {
+            $qty = $c["total_qty"];
+            $price = $c["price"];
+            $totalPrice = $qty * $price;
+            $tPrice += $totalPrice;
+            $tQty += $qty;
+        }
+
+        $orders = array_map(function ($c) {
+            return ([
+                "product_id" => $c["product_id"],
+                "product_name" => $c["name"],
+                "img_url" => asset("/storage/products/" . $c["image"]),
+                "qty" => $c["total_qty"],
+                "price" => $c["price"],
+                "image" => $c["image"]
+            ]);
+        }, $carts);
+
         return response()->json([
-            "data" => $cs
+            "success" => true,
+            "data" => [
+                "orders" => $orders,
+                "totalItems" => $tQty,
+                "totalOrder" => count($carts),
+                "totalAmount" => $tPrice
+            ]
         ]);
-        // return response()->json([
-        //     "success" => true,
-        //     "data" => [
-        //         "orders" => [
-        //             [
-        //                 "productId" => 1,
-        //                 "productName" => "laptop",
-        //                 "productImage" => "",
-        //                 "qty" => 3,
-        //                 "price" => 2000
-        //             ]
-        //         ],
-        //         "totalItems" => 3,
-        //         "totalAmount" => 20000
-        //     ]
-        // ]);
     }
 
     /**
