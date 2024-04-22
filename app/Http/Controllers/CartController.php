@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use App\Models\Product;
 use App\Models\Cart;
 use App\Models\User;
@@ -89,16 +90,58 @@ class CartController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        $validator = Validator::make($request->all(), [
+            'product_id' => 'required|integer',
+            'total_qty' => 'required|integer|min:1',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => $validator->errors()
+                ],
+                422
+            );
+        }
+
+        $product = Product::find((int)$request->product_id);
+        if ($product == NULL) {
+            return response()->json([
+                "success" => false,
+                "message" => "Product is not found"
+            ], 404);
+        }
+        if ($request->total_qty > $product->qty) {
+            return response()->json([
+                "success" => false,
+                "message" => "Quantity exceeds limit"
+            ], 422);
+        }
+
         $userId = auth()->user()->id;
-        Cart::create([
-            "product_id" => 6,
-            "user_id" => $userId,
-            "total_qty" => 1
-        ]);
-        return response()->json([
-            "success" => true,
-        ]);
+        $row = DB::table("carts")
+            ->where("user_id", "=", $userId)
+            ->where("product_id", "=", $request->product_id)
+            ->get();
+
+        if ($row->isEmpty()) {
+            Cart::create(
+                array_merge(
+                    $validator->validate(),
+                    ["user_id" => $userId]
+                )
+            );
+
+            return $this->index();
+        }
+
+        Cart::where("user_id", "=", $userId)
+            ->where("product_id", "=", $request->product_id)
+            ->update(["total_qty" => $request->total_qty]);
+
+        return $this->index();
     }
 
     /**
