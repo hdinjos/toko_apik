@@ -184,8 +184,42 @@ class CartController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
         //
+        $userId = auth()->user()->id;
+        $validator = Validator::make($request->all(), [
+            'product_id' => 'integer',
+        ]);
+
+
+        if ($validator->fails()) {
+            return response()->json(
+                [
+                    "success" => false,
+                    "message" => $validator->errors()
+                ],
+                422
+            );
+        }
+
+        if ($request->product_id) {
+            $product = Product::find((int)$request->product_id);
+            if ($product == NULL) {
+                return response()->json([
+                    "success" => false,
+                    "message" => "Product is not found"
+                ], 404);
+            }
+
+            Cart::where("product_id", "=", $request->product_id)
+                ->delete();
+        } else {
+            Cart::where("user_id", "=", $userId)
+                ->delete();
+        }
+
+
+        return $this->index();
     }
 }
