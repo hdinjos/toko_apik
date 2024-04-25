@@ -212,8 +212,15 @@ class CartController extends Controller
                 ], 404);
             }
 
-            Cart::where("product_id", "=", $request->product_id)
-                ->delete();
+            $row = DB::table("carts")
+                ->where("user_id", "=", $userId)
+                ->where("product_id", "=", $request->product_id)
+                ->get();
+
+            if ($row) {
+                Cart::where("product_id", "=", $request->product_id)
+                    ->delete();
+            }
         } else {
             Cart::where("user_id", "=", $userId)
                 ->delete();
