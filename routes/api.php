@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductCategoriesController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Middleware\VerifyJwt;
 
 /*
@@ -62,4 +63,6 @@ Route::group(['middleware' => ['jwt.verify:2']], function ($router) {
     Route::get('/cart', [CartController::class, "index"]);
     Route::post('/cart', [CartController::class, "store"]);
     Route::delete('/cart', [CartController::class, "destroy"]);
+    Route::post('/checkout', [InvoiceController::class, "store"]);
+    Route::post('/paid', [InvoiceController::class, "update"]);
 });
