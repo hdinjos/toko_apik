@@ -15,13 +15,21 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::all();
+        $page = $request->get("page");
+        $limit = $request->get("limit");
+
+        $skip = ($limit * $page) - $limit;
+        $products = Product::skip($skip)->take($limit)->get();
+        $total = Product::count();
         return response()->json(
             [
                 "success" => true,
                 "data" => $products,
+                "page" => (int)$page,
+                "total_data" => $total,
+                "total_page" => ceil($total / $limit),
             ]
         );
     }
