@@ -17,19 +17,25 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $page = $request->get("page");
+        $page = $request->get("page") ? $request->get("page") : 1;
         $limit = $request->get("limit");
+        $search = $request->get("search");
 
         $skip = ($limit * $page) - $limit;
-        $products = Product::skip($skip)->take($limit)->get();
-        $total = Product::count();
+        $products = Product::where("name", "LIKE", "%"  . $search . "%")
+            ->orderBy("created_at", "desc")
+            ->skip($skip)
+            ->take($limit)
+            ->get();
+        $total = Product::where("name", "LIKE", "%"  . $search . "%")
+            ->count();
         return response()->json(
             [
                 "success" => true,
                 "data" => $products,
                 "page" => (int)$page,
                 "total_data" => $total,
-                "total_page" => ceil($total / $limit),
+                "total_page" => $limit  ? ceil($total / $limit) : 1,
             ]
         );
     }
