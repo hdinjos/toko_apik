@@ -16,10 +16,87 @@ class InvoiceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
+
     {
+        $status = $request->get("status");
+        $invoice_number = $request->get("invoice_number");
+
+        if ($status && $invoice_number) {
+            $invs = ProductInvoice::join("invoices", "product_invoices.invoice_id", "invoices.id")
+                ->where(
+                    [
+                        ["status", "=", $status],
+                        ["invoice_number", "=", $invoice_number]
+                    ]
+
+                )
+                ->select([
+                    "product_invoices.*",
+                    "invoices.id as invoice_id",
+                    "invoices.invoice_number",
+                    "invoices.buying_date",
+                    "invoices.paying_date",
+                    "invoices.status",
+                ])
+                ->get();
+
+
+            return response()->json([
+                "success" => true,
+                "data" => $invs
+            ]);
+        }
+
+        if ($status) {
+            $invs = ProductInvoice::join("invoices", "product_invoices.invoice_id", "invoices.id")
+                ->where("status", "=", $status)
+                ->select([
+                    "product_invoices.*",
+                    "invoices.id as invoice_id",
+                    "invoices.invoice_number",
+                    "invoices.buying_date",
+                    "invoices.paying_date",
+                    "invoices.status",
+                ])
+                ->get();
+            return response()->json([
+                "success" => true,
+                "data" => $invs
+            ]);
+        }
+
+        if ($invoice_number) {
+            $invs = ProductInvoice::join("invoices", "product_invoices.invoice_id", "invoices.id")
+                ->where("invoice_number", "=", $invoice_number)
+                ->select([
+                    "product_invoices.*",
+                    "invoices.id as invoice_id",
+                    "invoices.invoice_number",
+                    "invoices.buying_date",
+                    "invoices.paying_date",
+                    "invoices.status",
+                ])
+                ->get();
+            return response()->json([
+                "success" => true,
+                "data" => $invs
+            ]);
+        }
+
+        $invs = ProductInvoice::join("invoices", "product_invoices.invoice_id", "invoices.id")
+            ->select([
+                "product_invoices.*",
+                "invoices.id as invoice_id",
+                "invoices.invoice_number",
+                "invoices.buying_date",
+                "invoices.paying_date",
+                "invoices.status",
+            ])
+            ->get();
         return response()->json([
-            "message" => "oke"
+            "success" => true,
+            "data" => $invs
         ]);
     }
 

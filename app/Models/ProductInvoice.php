@@ -16,4 +16,9 @@ class ProductInvoice extends Model
         'invoice_id',
         'unit_price'
     ];
+
+    protected $hidden = [
+        "created_at",
+        "updated_at",
+    ];
 }

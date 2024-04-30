@@ -65,4 +65,5 @@ Route::group(['middleware' => ['jwt.verify:2']], function ($router) {
     Route::delete('/cart', [CartController::class, "destroy"]);
     Route::post('/checkout', [InvoiceController::class, "store"]);
     Route::post('/paid', [InvoiceController::class, "update"]);
+    Route::get('/invoices', [InvoiceController::class, "index"]);
 });
