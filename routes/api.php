@@ -46,17 +46,22 @@ Route::group([
 Route::group([
     'middleware' => ['jwt.verify:1'],
 ], function ($router) {
-    Route::get('/products', [ProductController::class, 'index']);
-    Route::get('/products/{productId}', [ProductController::class, 'show']);
     Route::post('/products', [ProductController::class, 'store']);
     Route::post('/products/{productId}', [ProductController::class, 'update']);
     Route::delete('/products/{productId}', [ProductController::class, 'destroy']);
 
-    Route::get('/product-category', [ProductCategoriesController::class, 'index']);
     Route::post('/product-category', [ProductCategoriesController::class, 'store']);
     Route::get('/product-category/{productCategoryId}', [ProductCategoriesController::class, 'show']);
     Route::post('/product-category/{productCategoryId}', [ProductCategoriesController::class, 'update']);
     Route::delete('/product-category/{productCategoryId}', [ProductCategoriesController::class, 'destroy']);
+});
+
+Route::group([
+    'middleware' => ['jwt.verify:1,2'],
+], function ($router) {
+    Route::get('/products', [ProductController::class, 'index']);
+    Route::get('/products/{productId}', [ProductController::class, 'show']);
+    Route::get('/product-category', [ProductCategoriesController::class, 'index']);
 });
 
 Route::group(['middleware' => ['jwt.verify:2']], function ($router) {
