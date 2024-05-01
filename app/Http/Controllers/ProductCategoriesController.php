@@ -9,173 +9,191 @@ use Illuminate\Support\Facades\Validator;
 
 class ProductCategoriesController extends Controller
 {
-  /**
-   * Display a listing of the resource.
-   *
-   * @return \Illuminate\Http\Response
-   */
-  public function index()
-  {
-    $productCat = ProductCategories::all();
-    return response()->json([
-      "success" => "true",
-      "data" => $productCat
-    ], 200);
-  }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(Request $request)
+    {
+        $page = $request->get("page") ? $request->get("page") : 1;
+        $limit = $request->get("limit");
+        $search = $request->get("search");
+        var_dump($limit);
 
-  /**
-   * Show the form for creating a new resource.
-   *
-   * @return \Illuminate\Http\Response
-   */
-  public function create()
-  {
+        $skip = ($limit * $page) - $limit;
+        $productCat = ProductCategories::where("name", "LIKE", "%" . $search . "%")
+            ->orderBy("created_at", "desc")
+            ->skip($skip)
+            ->limit($limit)
+            ->get();
 
-    //
-  }
-
-  /**
-   * Store a newly created resource in storage.
-   *
-   * @param  \Illuminate\Http\Request  $request
-   * @return \Illuminate\Http\Response
-   */
-  public function store(Request $request)
-  {
-    var_dump($request->all());
-
-    $validator = Validator::make($request->all(), [
-      "name" => "required|string|between:2,50"
-    ]);
-    if ($validator->fails()) {
-      return response()->json([
-        "success" => false,
-        "message" => $validator->errors()
-      ], 422);
+        $total = ProductCategories::where("name", "LIKE", "%" . $search . "%")
+            ->skip($skip)
+            ->limit($limit)
+            ->count();
+        return response()->json([
+            "success" => "true",
+            "data" => $productCat,
+            "page" => (int)$page,
+            "total_data" => $total,
+            "total_page" => $limit ? ceil($total / $limit) : 1
+        ], 200);
     }
 
-    ProductCategories::create($validator->validate());
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
 
-    return response()->json([
-      "success" => true,
-      "message" => "create product category success"
-    ], 201);
-  }
-
-  /**
-   * Display the specified resource.
-   *
-   * @param  \App\Models\ProductCategories  $productCategories
-   * @return \Illuminate\Http\Response
-   */
-  public function show($productCategoryId)
-
-  {
-    if (empty($productCategoryId)) {
-      return response()->json([
-        "success" => false,
-        "message" => "product category not found"
-      ], 404);
+        //
     }
 
-    $productCat = ProductCategories::find((int)$productCategoryId);
-    if ($productCat == NULL) {
-      return response()->json([
-        "success" => false,
-        "message" => "product category not found"
-      ], 404);
-    } else {
-      return response()->json([
-        "message" => true,
-        "data" => $productCat
-      ], 200);
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        var_dump($request->all());
+
+        $validator = Validator::make($request->all(), [
+            "name" => "required|string|between:2,50"
+        ]);
+        if ($validator->fails()) {
+            return response()->json([
+                "success" => false,
+                "message" => $validator->errors()
+            ], 422);
+        }
+
+        ProductCategories::create($validator->validate());
+
+        return response()->json([
+            "success" => true,
+            "message" => "create product category success"
+        ], 201);
     }
 
-    //
-  }
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\ProductCategories  $productCategories
+     * @return \Illuminate\Http\Response
+     */
+    public function show($productCategoryId)
 
-  /**
-   * Show the form for editing the specified resource.
-   *
-   * @param  \App\Models\ProductCategories  $productCategories
-   * @return \Illuminate\Http\Response
-   */
-  public function edit(ProductCategories $productCategories)
-  {
-    //
-  }
+    {
+        if (empty($productCategoryId)) {
+            return response()->json([
+                "success" => false,
+                "message" => "product category not found"
+            ], 404);
+        }
 
-  /**
-   * Update the specified resource in storage.
-   *
-   * @param  \Illuminate\Http\Request  $request
-   * @param  \App\Models\ProductCategories  $productCategories
-   * @return \Illuminate\Http\Response
-   */
-  public function update(Request $request, $productCategoryId)
-  {
-    //
-    if (empty($productCategoryId)) {
-      return response()->json([
-        "success" => false,
-        "message" => "product category not found"
-      ], 404);
+        $productCat = ProductCategories::find((int)$productCategoryId);
+        if ($productCat == NULL) {
+            return response()->json([
+                "success" => false,
+                "message" => "product category not found"
+            ], 404);
+        } else {
+            return response()->json([
+                "message" => true,
+                "data" => $productCat
+            ], 200);
+        }
+
+        //
     }
 
-    $validator = Validator::make($request->all(), [
-      "name" => "required|string|between:2,50"
-    ]);
-
-    if ($validator->fails()) {
-      return response()->json([
-        "success" => false,
-        "message" => $validator->errors()
-      ], 422);
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\ProductCategories  $productCategories
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(ProductCategories $productCategories)
+    {
+        //
     }
 
-    $productCat = ProductCategories::find((int)$productCategoryId);
-    if ($productCat == NULL) {
-      return response()->json([
-        "success" => false,
-        "message" => "product category not found"
-      ], 404);
-    } else {
-      $productCat->update($validator->validate());
-      return response()->json([
-        "success" => false,
-        "message" => "product category update success"
-      ], 200);
-    }
-  }
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\ProductCategories  $productCategories
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $productCategoryId)
+    {
+        //
+        if (empty($productCategoryId)) {
+            return response()->json([
+                "success" => false,
+                "message" => "product category not found"
+            ], 404);
+        }
 
-  /**
-   * Remove the specified resource from storage.
-   *
-   * @param  \App\Models\ProductCategories  $productCategories
-   * @return \Illuminate\Http\Response
-   */
-  public function destroy($productCategoryId)
-  {
-    //
-    if (empty($productCategoryId)) {
-      return response()->json([
-        "success" => false,
-        "message" => "product category not found"
-      ], 404);
+        $validator = Validator::make($request->all(), [
+            "name" => "required|string|between:2,50"
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                "success" => false,
+                "message" => $validator->errors()
+            ], 422);
+        }
+
+        $productCat = ProductCategories::find((int)$productCategoryId);
+        if ($productCat == NULL) {
+            return response()->json([
+                "success" => false,
+                "message" => "product category not found"
+            ], 404);
+        } else {
+            $productCat->update($validator->validate());
+            return response()->json([
+                "success" => false,
+                "message" => "product category update success"
+            ], 200);
+        }
     }
 
-    $productCat = ProductCategories::find((int)$productCategoryId);
-    if ($productCat == NULL) {
-      return response()->json([
-        "success" => false,
-        "message" => "product category not found"
-      ], 404);
-    } else {
-      $productCat->delete();
-      return response()->json([
-        "success" => true,
-        "message" => "delete product category success"
-      ], 200);
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\ProductCategories  $productCategories
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($productCategoryId)
+    {
+        //
+        if (empty($productCategoryId)) {
+            return response()->json([
+                "success" => false,
+                "message" => "product category not found"
+            ], 404);
+        }
+
+        $productCat = ProductCategories::find((int)$productCategoryId);
+        if ($productCat == NULL) {
+            return response()->json([
+                "success" => false,
+                "message" => "product category not found"
+            ], 404);
+        } else {
+            $productCat->delete();
+            return response()->json([
+                "success" => true,
+                "message" => "delete product category success"
+            ], 200);
+        }
     }
-  }
 }
